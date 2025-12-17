@@ -1,9 +1,9 @@
 import express from 'express';
-import geminiresponse2  from "../services/geminiresponse2.js";
+import geminiresponseconsensus  from "../services/geminiresponseconsensus.js";
 const router = express.Router();
-router.post('/antaraexpert', async (req,res)=>{
+router.post('/critics', async (req,res)=>{
     try{
-        const answer = await geminiresponse2(req.body.userProblem);
+        const answer = await geminiresponseconsensus(req.body.userProblem);
         res.json({answer});
     } catch(error){
         console.error("Error generatinf reponse:", error);

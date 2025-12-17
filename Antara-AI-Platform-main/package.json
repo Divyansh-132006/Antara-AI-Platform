@@ -20,8 +20,10 @@
     "start": "nodemon server.js"
   },
   "dependencies": {
+    "@ai-sdk/xai": "^2.0.40",
     "@google/genai": "^1.31.0",
     "@google/generative-ai": "^0.24.1",
+    "ai": "^5.0.112",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",

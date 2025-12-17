@@ -1,54 +1,55 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import geminiresponse from "../services/geminiresponse.js";
-import geminiresponse2 from "../services/geminiresponse2.js";
-import dotenv from "dotenv";
-dotenv.config();
+import geminiresponseexplanation from "../services/geminiresponseexplanation.js";
+import geminiresponsereasoning from "../services/geminiresponsereasoning.js";
+import geminiresponsecritics from "../services/geminiresponsecritics.js";
+import geminiresponseconsensus from "../services/geminiresponseconsensus.js";
+import geminiresponsehallucination from "../services/geminiresponsehallucination.js";
+import geminiresponsefinal from "../services/geminiresponsefinal.js";
+ async function antaraPipeline(userQuestion) {
+  const [explanation, reasoning] = await Promise.all([
+    geminiresponseexplanation(userQuestion),
+    geminiresponsereasoning(userQuestion)
+       ]);
 
-const ai = new GoogleGenerativeAI(process.env.GEMINI_SYSTEM_PROMPT_COMPARE);
+  const critics = await geminiresponsecritics(explanation);
 
-const compareAIResponses = async (req, res) => {
-  try {
-    const { prompt } = req.body;
+  const consensusInput = `
+    Question:
+         ${userQuestion}
 
-    const [answer1, answer2] = await Promise.all([
-      geminiresponse(prompt),
-      geminiresponse2(prompt)
-    ]);
+          Explanaton Answer:
+         ${explanation}
 
-    const comparePrompt = `
-Your task is to understand the original question, analyze both answers, fix mistakes, improve clarity, and produce one perfect final answer. Avoid special symbols and do not mention comparison.
-Original question: "${prompt}"
-Answer one:
-${answer1}
-Answer two:
-${answer2}
+          Reasoning Answer:
+       ${reasoning}
+`;
+  const consensus = await geminiresponseconsensus(consensusInput);
+
+  const synthesisInput = `
+User Question:
+${userQuestion}
+
+Explanation:
+${explanation}
+
+Reasoning:
+${reasoning}
+
+Critic Notes:
+${critics}
+
+Consensus Analysis:
+${consensus}
 `;
 
-    const model = ai.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: comparePrompt
-    });
+  const finalAnswer = await geminiresponsefinal(synthesisInput);
 
-    const response = await model.generateContent([
-      {
-        role: "user",
-        parts: [{ text: "Generate the final improved answer." }]
-      }
-    ]);
+  const safety = await geminiresponsehallucination(finalAnswer);
 
-    const finalAnswer = response.response.text();
+  return {
+    finalAnswer,
+    safety
+  };
+}
 
-    res.json({
-      original_prompt: prompt,
-      model1_output: answer1,
-      model2_output: answer2,
-      final_answer: finalAnswer
-    });
 
-  } catch (error) {
-    console.error("Comparison Error:", error);
-    res.status(500).json({ error: "Nahi Mila kuch" });
-  }
-};
-
-export default compareAIResponses;
+export default antaraPipeline

@@ -2,31 +2,40 @@ import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema(
     {
-        name:{
-            type:String,
-            required:[true, 'Field is mandotary'],
-            lowercase:true
+        name: {
+            type: String,
+            required: [true, 'Field is mandotary'],
+            lowercase: true
         },
-        username:{
-             type:String,
-            required:[true, 'Field is mandotary'],
-            lowercase:true,
-            unique:true
+        username: {
+            type: String,
+            required: [true, 'Field is mandotary'],
+            lowercase: true,
+            unique: true
         },
-        email:{
-               type:String,
-            required:[true, 'Field is mandotary'],
-            lowercase:true,
-            unique:true
+        email: {
+            type: String,
+            required: [true, 'Field is mandotary'],
+            lowercase: true,
+            unique: true
         },
-        password:{
-            type:String,
-            require:[true, 'Field is mandotary']
-        }
-        
-
+        password: {
+            type: String,
+            require: [true, 'Field is mandotary']
+        },
+        conversations: [
+            {
+                role: { type: String, required: true }, // 'user' or 'model'
+                parts: [
+                    {
+                        text: { type: String, required: true }
+                    }
+                ],
+                timestamp: { type: Date, default: Date.now }
+            }
+        ]
     },
-    {timestamps:true})
+    { timestamps: true })
 
-    const User = mongoose.model("User", userSchema)
-    export default User
+const User = mongoose.model("User", userSchema)
+export default User

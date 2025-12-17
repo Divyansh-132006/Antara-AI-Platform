@@ -1,12 +1,9 @@
 import express from 'express';
 import dotenv from "dotenv";
 import cors from 'cors';
-import User from '../Antara-AI-Platform-main/models/user.model.js'
-import antaramaster from './routes/firstai.routes.js';
-import antaraexpert from './routes/secondai.routes.js';
-import bestsolution from './routes/compare.routes.js';
-import signup from './routes/auth.route.js'
-import mongoose from 'mongoose'
+import anatara from './routes/antara.routes.js'
+import signup from './routes/auth.route.js';
+import mongoose from 'mongoose';
 dotenv.config();
 mongoose.connect(process.env.MONGO_DB_ANTARA_AI)
 .then(() => {
@@ -14,13 +11,9 @@ mongoose.connect(process.env.MONGO_DB_ANTARA_AI)
 }).catch(err => {
   console.error("Alert:- MongoDB connection error!:", err);
 });
-
-
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
-
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
@@ -30,11 +23,8 @@ app.get('/', (req, res) => {
   console.log("Hello Users");
 });
 
-app.use('/api/antaramodel', antaramaster);
-app.use('/api/antaramodel', antaraexpert);
-app.use('/api/antaramodel', bestsolution);
-app.use('/api/antaramodel', signup);
-
+app.use('/api/antaramodelai', anatara);
+app.use('/api/antaramodelai', signup);
 app.listen(PORT, () => {
   console.log(`Server is running at ${PORT}`);
 });
